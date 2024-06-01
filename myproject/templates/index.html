@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 70%;
+            padding: 40px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #0056b3;
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 15px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button[type="submit"] {
+            padding: 15px 30px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        body {
+            background-color: #fff; /* Задний фон страницы */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Search</h1>
+        <form action="{{ url_for('search_movie') }}" method="get">
+            <input type="text" name="query" placeholder="Enter movie name">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</body>
+</html>

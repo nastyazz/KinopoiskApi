@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            background-color: #87CEEB;
+            color: #000;
+            padding: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        a {
+            color: #000;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+        .no-movies {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Results</h1>
+        {% if movies %}
+            <ul>
+                {% for movie in movies %}
+                    <li>
+                        <a href="{{ url_for('get_movie', movie_id=movie['id']) }}">{{ movie['name'] }} ({{ movie['year'] }})</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-movies">No movies found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

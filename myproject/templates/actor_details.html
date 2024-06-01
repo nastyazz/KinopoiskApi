@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ actor.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            color: #444;
+        }
+        img {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        strong {
+            color: #555;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+            color: #87CEEB;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #87CEEB;
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            background: #87CEEB;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            background: #87CEEB;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ actor.name }} ({{ actor.enName }})</h1>
+        <img src="{{ actor.photo }}" alt="{{ actor.name }}" width="200">
+        <p><strong>Sex:</strong> {{ actor.sex }}</p>
+        <p><strong>Growth:</strong> {{ actor.growth }} cm</p>
+        <p><strong>Birthday:</strong> {{ actor.birthday }}</p>
+        <p><strong>Age:</strong> {{ actor.age }}</p>
+        <p><strong>Birth Place:</strong> {{ actor.birthPlace | join(', ') }}</p>
+        <h2 class="section-title">Facts</h2>
+        <ul>
+            {% for fact in actor.facts %}
+                <li>{{ fact }}</li>
+            {% endfor %}
+        </ul>
+        <h2 class="section-title">Movies</h2>
+        <ul>
+            {% for movie in actor.movies %}
+                <li>
+                    <strong>{{ movie.name }}</strong> ({{ movie.alternativeName }})<br>
+                    <p>Rating: {{ movie.rating }}</p>
+                    <p>Description: {{ movie.description }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+        <div>
+            <a class="back-link" href="{{ url_for('index') }}">Back</a>
+        </div>    
+    </div>
+</body>
+</html>
