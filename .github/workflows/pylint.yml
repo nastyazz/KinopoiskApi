@@ -35,8 +35,7 @@ jobs:
           - name: Установка зависимостей
             run: |
               python -m pip install --upgrade pip
-              pip install pytest==6.2.5
-              pip install numpy
+              pip install pytest==7.4.2
           - name: Pytest
             working-directory: ./myproject
             run: pytest test_api.py
