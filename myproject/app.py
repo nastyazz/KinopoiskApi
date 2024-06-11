@@ -10,6 +10,90 @@ app.config.from_object(Config)
 STATUS_CODE_SEARCH_MOVIE = 200
 
 
+def get_info_for_actor(data: dict, name: str, default_value):
+    return data.get(name, default_value)
+
+
+def get_info_list(data: dict, first_name: str, default_value, second_name: str):
+    data_actor = data.get(first_name, [])
+    if data_actor is None:
+        return []
+    return [actor.get(second_name, default_value) for actor in data.get(first_name, [])]
+
+
+def get_actor_info(actor):
+    res = {}
+    keys_for_value = (
+        ('name', 'N/A'),
+        ('enName', 'N/A'),
+        ('photo', 'N/A'),
+        ('sex', 'N/A'),
+        ('growth', 'N/A'),
+        ('birthday', 'N/A'),
+        ('age', 'N/A'),
+        ('spouses', 'N/A'),
+    )
+    keys_for_list = (
+        ('birthPlace', 'value', 'N/A'),
+        ('facts', 'value', 'N/A'),
+    )
+    for first_name, default_value in keys_for_value:
+        res[first_name] = get_info_for_actor(actor, first_name, default_value)
+
+    for first_name, second_name, default_value in keys_for_list:
+        res[first_name] = get_info_list(actor, first_name, default_value, second_name)
+
+    res['movies'] = [
+                {
+                    'id': movie.get('id', 'N/A'),
+                    'name': movie.get('name', 'N/A'),
+                    'alternativeName': movie.get('alternativeName', 'N/A'),
+                    'rating': movie.get('rating', 'N/A'),
+                    'description': movie.get('description', 'N/A'),
+                }
+                for movie in actor.get('movies', 'N/A')
+                if movie.get('enProfession') == 'actor'
+            ]
+    return res
+
+
+def get_movie_value(data: dict, movie_name: str, default_value):
+    return data.get(movie_name, default_value)
+
+
+def get_movie_list(data: dict, first_name: str, default_value, second_name: str):
+    data_movie = data.get(first_name, [])
+    if data_movie is None:
+        return []
+    return [movie.get(second_name, default_value) for movie in data.get(first_name, [])]
+
+
+def get_movie_info(movie):
+    res = {}
+    keys_for_value_m = (('name', 'N/A'), ('year', 'N/A'), ('description', 'N/A'), ('url', 'N/A'))
+    keys_for_list_m = (('genres', 'name', 'N/A'), ('countries', 'name', 'N/A'))
+
+    for first_name, default_value in keys_for_value_m:
+        res[first_name] = get_movie_value(movie, first_name, default_value)
+
+    for first_name, second_name, default_value in keys_for_list_m:
+        res[first_name] = get_movie_list(movie, first_name, default_value, second_name)
+
+    res['rating'] = movie.get('rating', {}).get('kp', 'N/A')
+
+    res['actors'] = [
+        {
+            'id': actor.get('id', 'N/A'),
+            'name': actor.get('name', 'N/A'),
+            'photo': actor.get('photo', 'N/A'),
+        }
+        for actor in movie.get('persons', [])
+        if actor.get('enProfession') == 'actor'
+    ]
+
+    return res
+
+
 @app.route('/')
 def index():
     """
@@ -86,25 +170,7 @@ def get_movie(movie_id):
     response = requests.get(url, headers=headers)
     if response.status_code == STATUS_CODE_SEARCH_MOVIE:
         movie = response.json()
-        movie_info = {
-            'name': movie.get('name', 'N/A'),
-            'year': movie.get('year', 'N/A'),
-            'description': movie.get('description', 'N/A'),
-            'rating': movie.get('rating', {}).get('kp', 'N/A'),
-            'url': movie.get('url', 'N/A'),
-            'genres': [genre.get('name', 'N/A') for genre in movie.get('genres', [])],
-            'countries': [country.get('name', 'N/A') for country in movie.get('countries', [])],
-            'actors':
-            [
-                {
-                    'id': actor.get('id', 'N/A'),
-                    'name': actor.get('name', 'N/A'),
-                    'photo': actor.get('photo', 'N/A'),
-                }
-                for actor in movie.get('persons', 'N/A')
-                if actor.get('enProfession') == 'actor'
-            ],
-        }
+        movie_info = get_movie_info(movie)
         return render_template('movie_details.html', movie=movie_info)
     return render_template('error.html', message='Unable to fetch data'), response.status_code
 
@@ -129,30 +195,7 @@ def get_actor(actor_id):
     response = requests.get(url, headers=headers)
     if response.status_code == STATUS_CODE_SEARCH_MOVIE:
         actor = response.json()
-        actor_info = {
-            'name': actor.get('name', 'N/A'),
-            'enName': actor.get('enName', 'N/A'),
-            'photo': actor.get('photo', 'N/A'),
-            'sex': actor.get('sex', 'N/A'),
-            'growth': actor.get('growth', 'N/A'),
-            'birthday': actor.get('birthday', 'N/A'),
-            'age': actor.get('age', 'N/A'),
-            'birthPlace': [place.get('value', 'N/A') for place in actor.get('birthPlace', [])],
-            'spouses': actor.get('spouses', []),
-            'facts': [fact.get('value', 'N/A') for fact in actor.get('facts', [])],
-            'movies':
-            [
-                {
-                    'id': movie.get('id', 'N/A'),
-                    'name': movie.get('name', 'N/A'),
-                    'alternativeName': movie.get('alternativeName', 'N/A'),
-                    'rating': movie.get('rating', 'N/A'),
-                    'description': movie.get('description', 'N/A'),
-                }
-                for movie in actor.get('movies', 'N/A')
-                if movie.get('enProfession') == 'actor'
-            ],
-        }
+        actor_info = get_actor_info(actor)
         return render_template('actor_details.html', actor=actor_info)
     return render_template('error.html', message='Unable to fetch data'), response.status_code
 
