@@ -58,8 +58,8 @@ def get_actor_info(actor):
         'growth', 'birthday', 'age', 'spouses',
     )
     keys_for_list = (
-        ('birthPlace', 'value',),
-        ('facts', 'value',),
+        ('birthPlace', 'value'),
+        ('facts', 'value'),
     )
     for value_key in keys_for_value:
         res[value_key] = get_info_for_actor(actor, value_key)
@@ -125,7 +125,8 @@ def get_movie_info(movie):
     """
     res = {}
     keys_for_value_m = (
-        'name', 'year', 'description', 'url')
+        'name', 'year', 'description', 'url',
+    )
     keys_for_list_m = (('genres', 'name'), ('countries', 'name'))
 
     for value_key_m in keys_for_value_m:
