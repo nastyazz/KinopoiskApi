@@ -10,74 +10,129 @@ app.config.from_object(Config)
 STATUS_CODE_SEARCH_MOVIE = 200
 
 
-def get_info_for_actor(data: dict, name: str, default_value):
-    return data.get(name, default_value)
+def get_info_for_actor(data_dict: dict, name: str):
+    """
+    Retrieve actor information by specified key.
+
+    Parameters:
+        data_dict (dict): Dictionary containing actor data.
+        name (str): Key name to retrieve the value for.
+
+    Returns:
+        The value associated with the key or the default value if the key is not found.
+    """
+    return data_dict.get(name, 'N/A')
 
 
-def get_info_list(data: dict, first_name: str, default_value, second_name: str):
-    data_actor = data.get(first_name, [])
+def get_info_list(data_dlist: dict, value_key: str, list_key: str):
+    """
+    Retrieve a list of values from nested dictionaries.
+
+    Parameters:
+        data_dlist (dict): Dictionary containing data.
+        value_key (str): Key name for the outer dictionary.
+        list_key (str): Key name for the inner dictionaries.
+
+    Returns:
+        list: A list of values associated with the internal key for each item in the external list.
+    """
+    data_actor = data_dlist.get(value_key, [])
     if data_actor is None:
         return []
-    return [actor.get(second_name, default_value) for actor in data.get(first_name, [])]
+    return [actor.get(list_key, 'N/A') for actor in data_dlist.get(value_key, [])]
 
 
 def get_actor_info(actor):
+    """
+    Retrieve complete actor information.
+
+    Parameters:
+        actor (dict): Dictionary containing actor data.
+
+    Returns:
+        dict: Dictionary with actor information, including their movies.
+    """
     res = {}
     keys_for_value = (
-        ('name', 'N/A'),
-        ('enName', 'N/A'),
-        ('photo', 'N/A'),
-        ('sex', 'N/A'),
-        ('growth', 'N/A'),
-        ('birthday', 'N/A'),
-        ('age', 'N/A'),
-        ('spouses', 'N/A'),
+        'name', 'enName', 'photo', 'sex',
+        'growth', 'birthday', 'age', 'spouses',
     )
     keys_for_list = (
-        ('birthPlace', 'value', 'N/A'),
-        ('facts', 'value', 'N/A'),
+        ('birthPlace', 'value',),
+        ('facts', 'value',),
     )
-    for first_name, default_value in keys_for_value:
-        res[first_name] = get_info_for_actor(actor, first_name, default_value)
+    for value_key in keys_for_value:
+        res[value_key] = get_info_for_actor(actor, value_key)
 
-    for first_name, second_name, default_value in keys_for_list:
-        res[first_name] = get_info_list(actor, first_name, default_value, second_name)
+    for list_key, second_name in keys_for_list:
+        res[list_key] = get_info_list(actor, list_key, second_name)
 
     res['movies'] = [
-                {
-                    'id': movie.get('id', 'N/A'),
-                    'name': movie.get('name', 'N/A'),
-                    'alternativeName': movie.get('alternativeName', 'N/A'),
-                    'rating': movie.get('rating', 'N/A'),
-                    'description': movie.get('description', 'N/A'),
-                }
-                for movie in actor.get('movies', 'N/A')
-                if movie.get('enProfession') == 'actor'
-            ]
+        {
+            'id': movie.get('id', 'N/A'),
+            'name': movie.get('name', 'N/A'),
+            'alternativeName': movie.get('alternativeName', 'N/A'),
+            'rating': movie.get('rating', 'N/A'),
+            'description': movie.get('description', 'N/A'),
+        }
+        for movie in actor.get('movies', 'N/A')
+        if movie.get('enProfession') == 'actor'
+    ]
     return res
 
 
-def get_movie_value(data: dict, movie_name: str, default_value):
-    return data.get(movie_name, default_value)
+def get_movie_value(data_dict: dict, movie_name: str):
+    """
+    Retrieve movie information by specified key.
+
+    Parameters:
+        data_dict (dict): Dictionary containing movie data.
+        movie_name (str): Key name to retrieve the value for.
+
+    Returns:
+        The value associated with the key or the default value if the key is not found.
+    """
+    return data_dict.get(movie_name, 'N/A')
 
 
-def get_movie_list(data: dict, first_name: str, default_value, second_name: str):
-    data_movie = data.get(first_name, [])
+def get_movie_list(data_dlist: dict, value_key_m: str, list_key_m: str):
+    """
+    Retrieve a list of values from nested dictionaries.
+
+    Parameters:
+        data_dlist (dict): Dictionary containing data.
+        value_key_m (str): Key name for the outer dictionary.
+        list_key_m (str): Key name for the inner dictionaries.
+
+    Returns:
+        list: List of values associated with the inner key for each item in the outer list.
+    """
+    data_movie = data_dlist.get(value_key_m, [])
     if data_movie is None:
         return []
-    return [movie.get(second_name, default_value) for movie in data.get(first_name, [])]
+    return [movie.get(list_key_m, 'N/A') for movie in data_dlist.get(value_key_m, [])]
 
 
 def get_movie_info(movie):
+    """
+    Retrieve complete movie information.
+
+    Parameters:
+        movie (dict): Dictionary containing movie data.
+
+    Returns:
+        dict: Dictionary with movie information, including its actors.
+    """
     res = {}
-    keys_for_value_m = (('name', 'N/A'), ('year', 'N/A'), ('description', 'N/A'), ('url', 'N/A'))
-    keys_for_list_m = (('genres', 'name', 'N/A'), ('countries', 'name', 'N/A'))
+    keys_for_value_m = (
+        'name', 'year', 'description', 'url')
+    keys_for_list_m = (('genres', 'name'), ('countries', 'name'))
 
-    for first_name, default_value in keys_for_value_m:
-        res[first_name] = get_movie_value(movie, first_name, default_value)
+    for value_key_m in keys_for_value_m:
+        res[value_key_m] = get_movie_value(movie, value_key_m)
 
-    for first_name, second_name, default_value in keys_for_list_m:
-        res[first_name] = get_movie_list(movie, first_name, default_value, second_name)
+    for list_key_m, second_name in keys_for_list_m:
+        res[list_key_m] = get_movie_list(movie, list_key_m, second_name)
 
     res['rating'] = movie.get('rating', {}).get('kp', 'N/A')
 
@@ -141,7 +196,7 @@ def search_movie():
         'X-API-KEY': Config.KINOTOKEN,
     }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=1)
     message_error = {'error': 'Unable to fetch data', 'status_code': response.status_code}
     if response.status_code == STATUS_CODE_SEARCH_MOVIE:
         data_movie = response.json()
@@ -167,7 +222,7 @@ def get_movie(movie_id):
         'accept': 'application/json',
         'X-API-KEY': Config.KINOTOKEN,
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=1)
     if response.status_code == STATUS_CODE_SEARCH_MOVIE:
         movie = response.json()
         movie_info = get_movie_info(movie)
@@ -192,7 +247,7 @@ def get_actor(actor_id):
         'accept': 'application/json',
         'X-API-KEY': Config.KINOTOKEN,
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=1)
     if response.status_code == STATUS_CODE_SEARCH_MOVIE:
         actor = response.json()
         actor_info = get_actor_info(actor)
